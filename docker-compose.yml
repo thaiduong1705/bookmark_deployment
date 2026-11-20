@@ -1,0 +1,32 @@
+services:
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: unless-stopped
+
+  bookmark_service:
+    container_name: bookmark_service
+    image: thaiduong1705/bookmark_service:v1.0.0
+    depends_on:
+      - redis
+    env_file:
+      - ./bookmark_service/.env
+    restart: unless-stopped
+
+  portal:
+    image: ebvn/bookmark-app-portal:mono
+    container_name: portal
+    depends_on:
+      - bookmark_service
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+
+
