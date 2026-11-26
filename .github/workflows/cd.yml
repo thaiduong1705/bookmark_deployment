@@ -8,9 +8,6 @@ jobs:
   cd-pipeline:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-
       - name: ssh connect
         env:
           SERVER_USER: ${{secrets.SERVER_USER}}
@@ -26,4 +23,3 @@ jobs:
             docker compose up -d 
             docker image prune -f -a
           EOF
-          
