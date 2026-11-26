@@ -1,0 +1,25 @@
+name: cd.yml
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  cd-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ssh connect
+        env:
+          SERVER_USER: ${{secrets.SERVER_USER}}
+          SERVER_HOST: ${{secrets.SERVER_HOST}}
+          SERVER_PASSWORD: ${{secrets.SERVER_PASSWORD}}
+        run: |
+          sudo apt-get update && sudo apt-get install -y sshpass
+          sshpass -p "$SERVER_PASSWORD" ssh -T -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_HOST" << 'EOF'
+            set -e
+            cd ~/bookmark_deployment
+            git pull
+            docker compose down
+            docker compose up -d 
+            docker image prune -f -a
+          EOF
